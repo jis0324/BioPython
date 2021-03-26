@@ -26,8 +26,8 @@ timeStarted = time.time()
 child = subprocess.Popen(str(clustalo_cline), shell=True, universal_newlines=True)
 
 # waiting until subprocee is running
-time.sleep(90)
-print("\n")
+# time.sleep(90)
+# print("\n")
 
 while True:
 

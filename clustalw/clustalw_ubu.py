@@ -16,24 +16,25 @@ elsapsedTime = 0
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # The path of clustalw file.
-clustalW_exe = "/usr/bin/clustalw2"
+clustalW_exe = "clustalw2"
 
 #This line prepares the command to be used in clustalw application. 
-clustalw_cline = ClustalwCommandline(clustalW_exe, infile=os.path.join(base_dir, "input.fasta"), outfile=os.path.join(base_dir, "output.fasta"))
+clustalw_cline = ClustalwCommandline(clustalW_exe, infile=os.path.join(base_dir, "input.fasta"))
 
 #This line is to save the starting time of mafft 
 timeStarted = time.time() 
 
 #This line runs the command to perform the alignment process
 # child = subprocess.Popen(str(clustalw_cline), shell=True, universal_newlines=True)
-child = subprocess.Popen(clustalW_exe, shell=True, universal_newlines=True)
+# child = subprocess.Popen(clustalW_exe, shell=True, universal_newlines=True)
+child = subprocess.Popen(['gnome-terminal', '--', clustalW_exe])
 
 # waiting until subprocee is running
 time.sleep(90)
-print("\n")
+# print("\n")
 
 while True:
-
+    
     #This line is to compute the elapsed time 
     elsapsedTime = time.time() - timeStarted
     
@@ -49,13 +50,13 @@ while True:
     # Store if current memory usage is bigger
     max_memo = cur_memory if cur_memory > max_memo else max_memo
     
-    print("Execution Time: {}s / CPU Usage: {}% / Memory Usage: {}%".format(int(elsapsedTime), cur_cpu, cur_memory), end="\r")
+    # print("Execution Time: {}s / CPU Usage: {}% / Memory Usage: {}%".format(int(elsapsedTime), cur_cpu, cur_memory), end="\r")
     
     # Check subprocess status.
     poll = child.poll()
     if poll is None:
         # subprocess is alive yet.
-        time.sleep(1)
+        time.sleep(60)
         continue
     else:
         # subprocess already finished.
