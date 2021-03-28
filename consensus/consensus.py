@@ -14,15 +14,26 @@ alignment_length = AlignIO.read(file_path, "fasta").get_alignment_length()
 # define list variable that contain final result
 final_consensus_list = list()
 
-# iter columns
+# iter columns (column1, column2, column3...)
 for column_index in range(alignment_length):
     # pairs list per column (column1, column2 ...)
+    """
+    column_list is https://prnt.sc/10wh76n
+    for example : ["-", "G", "A"]
+    """
     column_list = [seq_record.seq[column_index] for seq_record in SeqIO.parse(file_path, "fasta")]
 
     # result of column ("-":3, "G":3.5, "A":3.5...)
+    """
+    The element of column_consensus_list is https://prnt.sc/10wi0to
+    for example : [{"letter":"-", "value":"3"},{"letter":"G", "value":"3.5"},{"letter":"A", "value":"3.5"}]
+    """
     column_consensus_list = list()
 
-    # iter rows in column(A[1][1], A[2][1], A[3][1]...)
+    # iterate elements of column(A[1][1], A[2][1], A[3][1]...)
+    """
+    https://prnt.sc/10wi4e9
+    """
     for i in column_list:
         # result each selecting character
         column_ele = {
@@ -46,7 +57,11 @@ for column_index in range(alignment_length):
         
         column_consensus_list.append(column_ele)
     
-    # get minium cost and letter from column values
+    # get minium cost and letter from column_consensus_list
+    """
+        will select minimum one value `{"letter":"-", "value":"3"}` 
+                from column_consensus_list [{"letter":"-", "value":"3"},{"letter":"G", "value":"3.5"},{"letter":"A", "value":"3.5"}]
+    """ 
     min_item = dict()
     for item in column_consensus_list:
         if not min_item:
