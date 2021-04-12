@@ -1,5 +1,7 @@
 #This line imports all the required Classes to perform alignments
 from Bio.Align.Applications import ClustalwCommandline
+from Bio import SeqIO, AlignIO
+
 #This module is for running another command from the inside of the Python
 import subprocess, time, os, psutil, sys
 
@@ -18,16 +20,23 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 # The path of clustalw file.
 clustalW_exe = "clustalw2"
 
-#This line prepares the command to be used in clustalw application. 
-clustalw_cline = ClustalwCommandline(clustalW_exe, infile=os.path.join(base_dir, "input.fasta"))
+#This line prepares the command to be used in clustalw application.
+"""
+    infile : set the path of input file as input.fasta in same path.
+    output : set the type of output file as fasta
+    outfile : set the path of output file as output.fasta
+    align : set to Multiple alignment as
+    quicktree : set the method as FAST/Approximate method.
+"""
+clustalw_cline = ClustalwCommandline(clustalW_exe, infile=os.path.join(base_dir, "input.fasta"), output="fasta", outfile=os.path.join(base_dir, "output.fasta"), align=True, quicktree=True)
 
 #This line is to save the starting time of mafft 
 timeStarted = time.time() 
 
 #This line runs the command to perform the alignment process
-# child = subprocess.Popen(str(clustalw_cline), shell=True, universal_newlines=True)
+child = subprocess.Popen(str(clustalw_cline), shell=True, universal_newlines=True)
 # child = subprocess.Popen(clustalW_exe, shell=True, universal_newlines=True)
-child = subprocess.Popen(['gnome-terminal', '--', clustalW_exe])
+# child = subprocess.Popen(['gnome-terminal', '--', clustalW_exe])
 
 # waiting until subprocee is running
 time.sleep(90)
@@ -60,6 +69,15 @@ while True:
         continue
     else:
         # subprocess already finished.
+        
+        print("Ordering the result sequences...")
+
+        # sort by sequence number
+        alignments = AlignIO.read(os.path.join(base_dir, "output.fasta"), "fasta")
+        alignments.sort(key = lambda alignment : alignment.id)
+        SeqIO.write(alignments, os.path.join(base_dir, "output.fasta"), "fasta")
+
+        # break to finish
         break
 
 print("\nFinished Successfully", end="\n")
