@@ -9,7 +9,7 @@ def progresBar(percent):
     print(int(percent * 100) * "*" + "]")
 
 #This line reads all of the records from the "Example.fasta" file.
-records = list(SeqIO.parse(r"input.fasta", "fasta"))
+records = list(SeqIO.parse(r"input1.fasta", "fasta"))
 
 #This line defines two variables used for showing the progress bar.
 counter = 0; lastP = -1
@@ -25,7 +25,7 @@ SNPs = {}
 refSeq = records[0].seq
 for i in range(1, len(records)):
     #This line adds a key for the current reference sequence to "SNPs"
-    SNPs[i] = []
+    SNPs[records[i].name] = []
     #Now that we have defined the reference sequence, we should define the next sequence to be compared with the reference one
     seq1 = records[i].seq
     #"mini" is the minimum length of these two sequences (seq1 and seq2)
@@ -49,7 +49,7 @@ for i in range(1, len(records)):
             if refSeq[k] == "-" or records[i][k] == "-":
                 continue
             else:
-                SNPs[i].append([refSeq[k], seq1[k], ref_position, seq_position])
+                SNPs[records[i].name].append([refSeq[k], seq1[k], ref_position, seq_position])
 
     #"counter" stores the number of the sequences compared to each other so that we can compute the percentage of the work done.
     counter = counter + 1
@@ -151,7 +151,7 @@ for pos in mutations.keys():
             sheet.cell(row, 3).value = str(item[1])
             
 #Finally we save the Excel workbook with the name of "Mutations.xlsx"
-wbm.save(r"C:\Users\a-s-j\Desktop\Experemint\scripts\Mutations.xlsx")
+wbm.save(r"Mutations.xlsx")
 
 #*********************************************************************
 #*********************************************************************
@@ -196,7 +196,7 @@ for pos in RegSNPs.keys():
             sheet.cell(row, 3).value = str(item[1])
             
 #Finally we save the Excel workbook with the name of "Mutations.xlsx"
-wbm.save(r"C:\Users\a-s-j\Desktop\Experemint\scripts\RegularSNPs.xlsx")
+wbm.save(r"RegularSNPs.xlsx")
 
 
 #*********************************************************************
@@ -225,7 +225,7 @@ wb.create_sheet(index = 2, title = "relations")
 # active created sheet - relations.
 sheet = wb["relations"]
 # write header on sheet
-sheet.cell(1, 1).value = "seqId"
+sheet.cell(1, 1).value = "seqName"
 sheet.cell(1, 2).value = "position of snps in sequence"
 sheet.cell(1, 3).value = "position of snps in refernce"
 sheet.cell(1, 4).value = "position and charecters in reference"
@@ -333,4 +333,4 @@ for key in SNPs.keys():
         row = row + 1
 
 #Finally we save the Excel workbook with the name of "Output.xlsx"
-wb.save(r"C:\Users\a-s-j\Desktop\Experemint\scripts\Output.xlsx")
+wb.save(r"Output.xlsx")
