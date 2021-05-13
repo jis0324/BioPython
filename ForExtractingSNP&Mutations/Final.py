@@ -1,7 +1,9 @@
 #This line imports the SeqIO class from the biopython module which helps us to read the sequences from the fasta file.
 from Bio import SeqIO
 #This line imports the openpyxl module which is needed for working with Excel files.
-import openpyxl 
+import openpyxl, re
+
+input_file = "gisaid_hcov-19_2021_04_21_10.fasta"
 
 #This function takes a number between 0 and 1 as the decimal pecent and shows the progress bar for that percent
 def progresBar(percent):
@@ -9,7 +11,7 @@ def progresBar(percent):
     print(int(percent * 100) * "*" + "]")
 
 #This line reads all of the records from the "Example.fasta" file.
-records = list(SeqIO.parse(r"input1.fasta", "fasta"))
+records = list(SeqIO.parse(input_file, "fasta"))
 
 #This line defines two variables used for showing the progress bar.
 counter = 0; lastP = -1
@@ -24,8 +26,9 @@ SNPs = {}
 #Each sheet of the Excel file is related to one of the sequence and its name is the number of the reference sequence in the fasta file.
 refSeq = records[0].seq
 for i in range(1, len(records)):
+    seq_name = re.sub(r"\[|\]|\*|\?|\:|\\|\/|\;", "_", records[i].name)
     #This line adds a key for the current reference sequence to "SNPs"
-    SNPs[records[i].name] = []
+    SNPs[seq_name] = []
     #Now that we have defined the reference sequence, we should define the next sequence to be compared with the reference one
     seq1 = records[i].seq
     #"mini" is the minimum length of these two sequences (seq1 and seq2)
@@ -49,7 +52,7 @@ for i in range(1, len(records)):
             if refSeq[k] == "-" or records[i][k] == "-":
                 continue
             else:
-                SNPs[records[i].name].append([refSeq[k], seq1[k], ref_position, seq_position])
+                SNPs[seq_name].append([refSeq[k], seq1[k], ref_position, seq_position])
 
     #"counter" stores the number of the sequences compared to each other so that we can compute the percentage of the work done.
     counter = counter + 1
@@ -310,11 +313,15 @@ for key2, value2 in SNPs.items():
     # increase row
     row = row + 1
 
+sheet_index = 0
 for key in SNPs.keys():
+    sheet_index += 1
     #This line creates a sheet with the name of the reference sequence
-    wb.create_sheet(index = int(key)+2 , title = str(int(key)+1))
+    # wb.create_sheet(index = int(key)+2 , title = str(int(key)+1))
+    wb.create_sheet(index = sheet_index+2 , title = key)
     #This line puts the created sheet in the "sheet" variable
-    sheet = wb[str(int(key)+1)]
+    sheet = wb[key]
+    # sheet = wb[str(int(key)+1)]
     #The next lines adds the title of each column to the Excel file.
     #The second column is the k-th character of the reference sequence
     sheet.cell(1, 1).value = "k-th item in the reference sequence"
